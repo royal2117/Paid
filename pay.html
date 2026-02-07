@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Scan & Pay</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  background:#000;
+  font-family:Arial, sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#fff;
+}
+.card{
+  background:#111;
+  width:340px;
+  padding:22px;
+  border-radius:16px;
+  text-align:center;
+  box-shadow:0 0 30px rgba(255,215,0,.15);
+}
+.timer{
+  color:#ff4d4d;
+  font-weight:bold;
+}
+.amount{
+  font-size:34px;
+  color:#ffd700;
+  margin:10px 0;
+}
+.qr{
+  width:180px;
+  background:#fff;
+  padding:10px;
+  border-radius:12px;
+  margin:12px auto;
+}
+button{
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  font-size:16px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+}
+.pay{
+  background:linear-gradient(135deg,#ffd700,#ffb700);
+  color:#000;
+  font-weight:bold;
+}
+.verify{
+  background:#25D366;
+  color:#000;
+  font-weight:bold;
+  display:none;
+}
+.status{
+  margin-top:12px;
+  padding:10px;
+  border-radius:10px;
+  font-size:13px;
+}
+.pending{
+  background:#1a1a1a;
+  color:#ff9f9f;
+}
+.ok{
+  background:#102a1c;
+  color:#6bff9f;
+}
+.note{
+  font-size:12px;
+  opacity:.7;
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <div class="timer" id="timer">01:52</div>
+  <h3>Scan & Pay</h3>
+
+  <div class="amount">₹99</div>
+
+  <img src="qr.png" class="qr">
+
+  <button class="pay" id="payBtn" onclick="payNow()">Pay ₹99</button>
+
+  <div class="status pending" id="statusBox">
+    ❌ Payment not initiated yet
+  </div>
+
+  <button class="verify" id="verifyBtn" onclick="goInstagram()">
+    Send Payment Proof on Instagram
+  </button>
+
+  <div class="note">
+    Payment will be verified manually
+  </div>
+</div>
+
+<script>
+/* ORDER ID */
+const orderId = "ORD" + Date.now();
+
+/* TIMER */
+let time = 112;
+setInterval(()=>{
+  let m = String(Math.floor(time/60)).padStart(2,"0");
+  let s = String(time%60).padStart(2,"0");
+  document.getElementById("timer").innerText = m+":"+s;
+  if(time>0) time--;
+},1000);
+
+/* CHECK RETURN FROM PAYMENT APP */
+if(localStorage.getItem("payment_started")){
+  document.getElementById("statusBox").className = "status ok";
+  document.getElementById("statusBox").innerHTML =
+    "✅ Payment initiated.<br>Please complete payment in your UPI app.";
+  document.getElementById("verifyBtn").style.display = "block";
+}
+
+/* PAY */
+function payNow(){
+  localStorage.setItem("payment_started","yes");
+
+  window.location.href =
+  "upi://pay?pa=royal1234567-@ybl&pn=Royal&am=99&cu=INR&tn=Order%20"+orderId;
+}
+
+/* INSTAGRAM */
+function goInstagram(){
+  window.location.href =
+  "https://www.instagram.com/royal_x_pro01?igsh=czkwdjc2d2VicW8z&utm_source=qr";
+}
+</script>
+
+</body>
+</html>
